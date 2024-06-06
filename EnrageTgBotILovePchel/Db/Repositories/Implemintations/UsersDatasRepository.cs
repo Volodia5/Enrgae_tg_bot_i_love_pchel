@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EnrageTgBotILovePchel.Db.Models;
+﻿using EnrageTgBotILovePchel.Db.Models;
 using EnrageTgBotILovePchel.Db.Repositories.Interfaces;
 using EnrageTgBotILovePchel.Db.DbConnector;
-using Telegram.Bot.Types;
 
 namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
 {
@@ -30,16 +24,6 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
             }
 
             return usersDatasList;
-        }
-
-        public UsersDatum GetUserDataById(int id)
-        {
-            return _dbContext.UsersData.Where(x => x.Id == id).FirstOrDefault();
-        }
-
-        public UsersDatum GetUserDataByTgUsername(string username)
-        {
-            return _dbContext.UsersData.Where(x => x.PlayerTgNick == username).FirstOrDefault();
         }
 
         public UsersDatum GetLastUserDataByChatId(long chatId)

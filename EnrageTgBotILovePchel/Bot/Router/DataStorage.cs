@@ -30,4 +30,9 @@ public class DataStorage
     {
         return _data[key];
     }
+    
+    public int GetCount()
+    {
+        return _data.Count;
+    }
 }

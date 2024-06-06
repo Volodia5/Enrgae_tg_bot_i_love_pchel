@@ -99,29 +99,6 @@ namespace EnrageTgBotILovePchel.Util.Button
                 InlineKeyboardButton.WithCallbackData(BotButtonsStorage.AdminMainMenu.FindCommand.Name,
                     BotButtonsStorage.AdminMainMenu.FindCommand.CallBackData)
             }
-    });
-
-    // public static InlineKeyboardMarkup SubmitDataChoose = new(new[]
-    // {
-    //     new[]
-    //     {
-    //         InlineKeyboardButton.WithCallbackData(BotButtonsStorage.SubmitData.CorrectData.Name,
-    //             BotButtonsStorage.SubmitData.CorrectData.CallBackData),
-    //         InlineKeyboardButton.WithCallbackData(BotButtonsStorage.SubmitData.NotCorrectData.Name,
-    //             BotButtonsStorage.SubmitData.NotCorrectData.CallBackData)
-    //     }
-    // });
-    //
-    // public static InlineKeyboardMarkup SubmitDeleteQuestionnaire = new(new[]
-    // {
-    //     new[]
-    //     {
-    //         InlineKeyboardButton.WithCallbackData(BotButtonsStorage.SearchTeammateMenu.Confirm.Name,
-    //             BotButtonsStorage.SearchTeammateMenu.Confirm.CallBackData),
-    //         InlineKeyboardButton.WithCallbackData(BotButtonsStorage.SearchTeammateMenu.Cancel.Name,
-    //             BotButtonsStorage.SearchTeammateMenu.Cancel.CallBackData)
-    //     }
-    // });
-}
-
+        });
+    }
 }

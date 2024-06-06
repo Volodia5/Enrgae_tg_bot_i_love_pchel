@@ -3,12 +3,6 @@ using EnrageTgBotILovePchel.Bot.Router;
 using EnrageTgBotILovePchel.Db.Models;
 using EnrageTgBotILovePchel.Db.Repositories.Interfaces;
 using EnrageTgBotILovePchel.Util.String;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EnrageTgBotILovePchel.Util.Button;
 using Telegram.Bot.Types.ReplyMarkups;
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnrageTgBotILovePchel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6140a28f1d6df2d61f71cf769aa08ca03708ca42")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0417c4eeaacd6ec7b889ec8accedd2fbdc632fe")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnrageTgBotILovePchel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnrageTgBotILovePchel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

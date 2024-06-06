@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using EnrageTgBotILovePchel.Bot;
-using EnrageTgBotILovePchel.Bot;
+﻿using EnrageTgBotILovePchel.Bot;
 
 BotInitializer bot = new BotInitializer();
 bot.Start();

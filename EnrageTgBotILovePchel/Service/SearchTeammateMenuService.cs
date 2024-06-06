@@ -216,7 +216,7 @@ namespace EnrageTgBotILovePchel.Service
                     UsersDatum user = _usersDatasRepository.GetFirstUserDataByChatId(transmittedData.ChatId);
                     _usersDatasRepository.DeleteUser(user);
 
-                    return new BotMessage(DialogsStringsStorage.AnketaUpdateSuccess + "\n" +
+                    return new BotMessage(DialogsStringsStorage.QuestionnaireUpdateSuccess + "\n" +
                                           DialogsStringsStorage.UserQuestionnaire(
                                               _usersDatasRepository
                                                   .GetLastUserDataByChatId(transmittedData.ChatId)),
@@ -224,7 +224,7 @@ namespace EnrageTgBotILovePchel.Service
                 }
                 else
                 {
-                    return new BotMessage(DialogsStringsStorage.AnketaCreateSuccess + "\n" +
+                    return new BotMessage(DialogsStringsStorage.QuestionnaireCreateSuccess + "\n" +
                                           DialogsStringsStorage.UserQuestionnaire(
                                               _usersDatasRepository
                                                   .GetLastUserDataByChatId(transmittedData.ChatId)),
@@ -303,14 +303,7 @@ namespace EnrageTgBotILovePchel.Service
                 return new BotMessage(DialogsStringsStorage.UserQuestionnaire(userData),
                     InlineKeyboardMarkupStorage.ChooseFindingMenu, MessageState.Create);
             }
-            // else
-            // {
-            //     var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
-            //     transmittedData.DataStorage.AddOrUpdate("currentPageNumber", (int)pageNumber + 1);
-            //     return new BotMessage(DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
-            //         InlineKeyboardMarkupStorage.FindTeammateControlMenu);
-            // }
-
+            
             return new BotMessage("Неопознанная ошибка", MessageState.Create);
         }
 

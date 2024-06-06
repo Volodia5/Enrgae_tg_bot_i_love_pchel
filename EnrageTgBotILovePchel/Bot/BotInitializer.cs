@@ -52,22 +52,4 @@ public class BotInitializer
 
         Logger.Info("Бот остановлен");
     }
-
-    // public async void UpdateMessage(TransmittedData transmittedData, InlineKeyboardMarkup keyboardMarkup)
-    // {
-    //     if (transmittedData.MessageId != null)
-    //     {
-    //         await _botClient.EditMessageTextAsync(transmittedData.ChatId,
-    //             transmittedData.MessageId,
-    //             "asdasdadads", 
-    //             ParseMode., 
-    //             null, 
-    //             false , 
-    //             keyboardMarkup);
-    //     }
-    //     else
-    //     {
-    //         Logger.Info("MessageId = null");
-    //     }
-    // }
 }

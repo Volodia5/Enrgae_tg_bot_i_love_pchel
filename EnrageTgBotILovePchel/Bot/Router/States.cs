@@ -21,28 +21,24 @@ public class MainMenu
 
 public class TournamentMenu
 {
-    public string ProcessInputTournamentRules = "ProcessInputTournamentRules";
-    public string ClickOnButtonEditingTournamentData = "ClickOnButtonEditingTournamentData";
+    public string ProcessInputTournamentRules { get; } = "ProcessInputTournamentRules";
     public string ProcessInputTournamentData { get; } = "ProcessEditingTournamentData";
 }
 
 public class SearchTeammateMenu
 {
-    public string QuestionnaireInputCreateConfirmation = "QuestionnaireInputCreateConfirmation";
-    
-    public string InputNickname = "InputNickname";
+    public string QuestionnaireInputCreateConfirmation { get; } = "QuestionnaireInputCreateConfirmation";
+    public string InputNickname { get; } = "InputNickname";
     public string ClickInlineButtonInActionWithGameMenu { get; } = "ClickInlineButtonInActionWithSearchMenu";
     public string InputName { get; } = "InputName";
     public string InputRating { get; } = "InputRating";
     public string InputPosition { get; } = "InputPosition";
-    
-    public string QuestionnaireUpdateCreateConfirmation = "QuestionnaireUpdateCreateConfirmation";
-    public string UpdateNickname = "UpdateNickname";
+    public string QuestionnaireUpdateCreateConfirmation { get; } = "QuestionnaireUpdateCreateConfirmation";
+    public string UpdateNickname { get; } = "UpdateNickname";
     public string UpdateName { get; } = "UpdateName";
     public string UpdateRating { get; } = "UpdateRating";
     public string UpdatePosition { get; } = "UpdatePosition";
     public string WatchingOnUserQuestionnaire { get; } = "WatchingOnUserQuestionnaire";
-    //public string QuestionnaireMenu { get; } = "QuestionnaireMenu";
     public string FindingTeammate { get; } = "FindingTeammate";
     public string QuestionnaireInputDeleteConfirmation { get; } = "QuestionnaireInputDeleteConfirmation";
 }

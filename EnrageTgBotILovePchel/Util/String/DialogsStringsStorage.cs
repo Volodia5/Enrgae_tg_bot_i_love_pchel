@@ -21,9 +21,9 @@ public class DialogsStringsStorage
     
     public const string NicknameInputError = "Ваш никнейм не может привышать 30 символов\n\n";
 
-    public const string AnketaCreateSuccess = "Анкета создана успешно!";
+    public const string QuestionnaireCreateSuccess = "Анкета создана успешно!";
 
-    public const string AnketaUpdateSuccess = "Анкета успешно обновлена!";
+    public const string QuestionnaireUpdateSuccess = "Анкета успешно обновлена!";
 
     public static string UserQuestionnaire(UsersDatum userData)
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EnrageTgBotILovePchel.Util.Button
+﻿namespace EnrageTgBotILovePchel.Util.Button
 {
     public static class BotButtonsStorage
     {
@@ -20,7 +14,7 @@ namespace EnrageTgBotILovePchel.Util.Button
         public BotButton ThirdPos { get; } = new("3", "ThirdPos");
         public BotButton FourthPos { get; } = new("4", "FourthPos");
         public BotButton FifthPos { get; } = new("5", "FifthPos");
-        public BotButton PreviousPlayer{ get; } = new("<<", "PreviousPlayer");
+        public BotButton PreviousPlayer { get; } = new("<<", "PreviousPlayer");
         public BotButton NextPlayer { get; } = new(">>", "NextPlayer");
         public BotButton FindTeammate { get; } = new("Найти команду", "FindTeammate");
         public BotButton EditQuestionnaire { get; } = new("Изменить анкету", "EditQuestionnaire");
@@ -36,10 +30,12 @@ namespace EnrageTgBotILovePchel.Util.Button
         public BotButton Rules { get; } = new("Правила", "Rules");
         public BotButton FindCommand { get; } = new("Найти команду", "FindTeammate");
     }
-    
+
     public class AdminMainMenu
     {
-        public BotButton ChangeTournamentData { get; } = new("Изменить данные следующего турнира", "ChangeTournamentData");
+        public BotButton ChangeTournamentData { get; } =
+            new("Изменить данные следующего турнира", "ChangeTournamentData");
+
         public BotButton WhenIsNextTournament { get; } = new("Когда следующий турнир ???", "WhenIsNextTournament");
         public BotButton Rules { get; } = new("Правила", "Rules");
         public BotButton FindCommand { get; } = new("Найти команду", "FindTeammate");

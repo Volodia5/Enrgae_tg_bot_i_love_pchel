@@ -2,7 +2,6 @@
 
 public enum MessageState
 {
-    UpdatableMessage,
     Create,
     Edit
 }
