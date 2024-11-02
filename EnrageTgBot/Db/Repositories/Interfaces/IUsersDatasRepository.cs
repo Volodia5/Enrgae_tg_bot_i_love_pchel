@@ -9,7 +9,7 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Interfaces
 {
     public interface IUsersDatasRepository
     {
-        List<UsersDatum> GetAllUserExcept(long chatId);
+        List<UsersDatum> GetAllUserExcept(long chatId, int? pos = 0, int? ratingFrom = -1, int? ratingTo = -1);
         UsersDatum GetLastUserDataByChatId(long chatId);
         
         UsersDatum GetFirstUserDataByChatId(long chatId);

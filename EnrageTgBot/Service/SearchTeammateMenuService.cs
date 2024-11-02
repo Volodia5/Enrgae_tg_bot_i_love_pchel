@@ -12,6 +12,8 @@ namespace EnrageTgBotILovePchel.Service
     {
         ITournamentDatasRepository _tournamentDatasRepository;
         IUsersDatasRepository _usersDatasRepository;
+        private Dictionary<ulong, List<UsersDatum>> users;
+        private BotRequestHandlers _botRequestHandlers;
 
         public SearchTeammateMenuService(ITournamentDatasRepository tournamentDatasRepository,
             IUsersDatasRepository usersDatasRepository)
@@ -24,23 +26,38 @@ namespace EnrageTgBotILovePchel.Service
         {
             if (CheckIsButton(textData) == false)
             {
+                //_botRequestHandlers = new BotRequestHandlers();
+                //string username = _botRequestHandlers.GetTgUsername(transmittedData.ChatId);
+
                 if (textData.Length > ConstraintStringsStorage.MaxUserFirstName)
                 {
                     return new BotMessage(DialogsStringsStorage.NameInputError, MessageState.Create);
                 }
 
+                // if (transmittedData.State == States.SearchTeammateMenu.UpdateName)
+                // {
+                //     transmittedData.State = States.SearchTeammateMenu.UpdateNickname;
+                // }
+                // else
+                // {
+                //     transmittedData.State = States.SearchTeammateMenu.InputNickname;
+                // }
+
                 if (transmittedData.State == States.SearchTeammateMenu.UpdateName)
                 {
-                    transmittedData.State = States.SearchTeammateMenu.UpdateNickname;
+                    transmittedData.State = States.SearchTeammateMenu.UpdateRating;
                 }
                 else
                 {
-                    transmittedData.State = States.SearchTeammateMenu.InputNickname;
+                    transmittedData.State = States.SearchTeammateMenu.InputRating;
                 }
 
-                _usersDatasRepository.AddUser(textData, 0, 0, string.Empty, transmittedData.ChatId, String.Empty);
+                _usersDatasRepository.AddUser(textData, 0, 0, "@" + transmittedData.TgUsername, transmittedData.ChatId,
+                    String.Empty);
 
-                return new BotMessage(DialogsStringsStorage.NewQuestionnaireUserTgNickname,
+                // return new BotMessage(DialogsStringsStorage.NewQuestionnaireUserTgNickname,
+                //     InlineKeyboardMarkup.Empty(), MessageState.Create);
+                return new BotMessage(DialogsStringsStorage.NewQuestionnaireRatingInput,
                     InlineKeyboardMarkup.Empty(), MessageState.Create);
             }
 
@@ -61,10 +78,6 @@ namespace EnrageTgBotILovePchel.Service
                 if (textData.StartsWith('@') == false)
                 {
                     usersData.PlayerTgNick = "@" + textData;
-                }
-                else
-                {
-                    usersData.PlayerTgNick = textData;
                 }
 
                 _usersDatasRepository.UpdateUser(usersData);
@@ -245,16 +258,228 @@ namespace EnrageTgBotILovePchel.Service
 
             if (textData == ConstraintStringsStorage.FindTeammate)
             {
+                transmittedData.State = States.SearchTeammateMenu.SelectSearchFilter;
+
+                return new BotMessage(DialogsStringsStorage.WantSelectSearchFilter,
+                    InlineKeyboardMarkupStorage.SelectSearchFilter, MessageState.Edit);
+            }
+
+            return new BotMessage("Неопознанная ошибка", MessageState.Create);
+        }
+
+        public BotMessage SelectSearchFilter(string textData, TransmittedData transmittedData)
+        {
+            if (textData == ConstraintStringsStorage.NoFilter)
+            {
                 List<UsersDatum> usersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId);
-                UsersDatum userData = _usersDatasRepository.GetLastUserDataByChatId(transmittedData.ChatId);
-                List<UsersDatum> findingUsersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId);
                 transmittedData.DataStorage.AddOrUpdate("currentPageNumber", 0);
-                transmittedData.State = States.SearchTeammateMenu.FindingTeammate;
                 var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
+                transmittedData.State = States.SearchTeammateMenu.FindingTeammate;
 
                 return new BotMessage(
                     "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
                     InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == ConstraintStringsStorage.PosFilter)
+            {
+                transmittedData.State = States.SearchTeammateMenu.ProcessClickOnInlineButtonFilter;
+                return new BotMessage(DialogsStringsStorage.SelectSearchFilter, InlineKeyboardMarkupStorage.PosFilter,
+                    MessageState.Edit);
+            }
+
+            if (textData == ConstraintStringsStorage.RatingFilter)
+            {
+                transmittedData.State = States.SearchTeammateMenu.ProcessClickOnInlineButtonFilter;
+                return new BotMessage(DialogsStringsStorage.SelectSearchFilter,
+                    InlineKeyboardMarkupStorage.RatingFilter,
+                    MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.Back.CallBackData)
+            {
+                UsersDatum userData = _usersDatasRepository.GetLastUserDataByChatId(transmittedData.ChatId);
+                transmittedData.State = States.SearchTeammateMenu.WatchingOnUserQuestionnaire;
+                return new BotMessage(DialogsStringsStorage.UserQuestionnaire(userData),
+                    InlineKeyboardMarkupStorage.ChooseFindingMenu, MessageState.Edit);
+            }
+
+            return new BotMessage("Неопознанная ошибка", MessageState.Create);
+        }
+
+        public BotMessage ProcessClickOnInlineButtonFilter(string textData, TransmittedData transmittedData)
+        {
+            UsersDatum userData = _usersDatasRepository.GetLastUserDataByChatId(transmittedData.ChatId);
+            List<UsersDatum> findingUsersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId);
+            transmittedData.DataStorage.AddOrUpdate("currentPageNumber", 0);
+            var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
+            transmittedData.State = States.SearchTeammateMenu.FindingTeammate;
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.FirstPos.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 1, 0, 12000);
+                transmittedData.Filter = 1;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.SecondPos.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 2, 0, 12000);
+                transmittedData.Filter = 2;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.ThirdPos.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 3, 0, 12000);
+                transmittedData.Filter = 3;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.FourthPos.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 4, 0, 12000);
+                transmittedData.Filter = 4;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.FifthPos.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 5, 0, 12000);
+                transmittedData.Filter = 5;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.LowRating.CallBackData)
+            {
+                List<UsersDatum> usersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 0, 2000);
+                transmittedData.Filter = 0;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.MidRating.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 2000, 4000);
+                transmittedData.Filter = 2000;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.HighRating.CallBackData)
+            {
+                List<UsersDatum> usersData =
+                    _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 4000, 6000);
+                transmittedData.Filter = 4000;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.SuperHighRating.CallBackData)
+            {
+                List<UsersDatum> usersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 6000);
+                transmittedData.Filter = 6000;
+
+                if (usersData.Count == 0)
+                {
+                    return new BotMessage(
+                        "На данный момент отсутствуют пользователи по заданным критерия, повторите попытку позже!",
+                        InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+                }
+
+                return new BotMessage(
+                    "Поиск команды:\n" + DialogsStringsStorage.FindingTeammate(usersData[(int)pageNumber]),
+                    InlineKeyboardMarkupStorage.FindTeammateControlMenu, MessageState.Edit);
+            }
+
+            if (textData == BotButtonsStorage.SearchTeammateMenu.Back.CallBackData)
+            {
+                transmittedData.State = States.SearchTeammateMenu.WatchingOnUserQuestionnaire;
+                return new BotMessage(DialogsStringsStorage.UserQuestionnaire(userData),
+                    InlineKeyboardMarkupStorage.ChooseFindingMenu, MessageState.Edit);
             }
 
             return new BotMessage("Неопознанная ошибка", MessageState.Create);
@@ -318,11 +543,12 @@ namespace EnrageTgBotILovePchel.Service
 
         public BotMessage SearchTeammateControlMenuAction(string textData, TransmittedData transmittedData)
         {
-            List<UsersDatum> usersData = _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId);
+            var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
+            List<UsersDatum> usersData;
 
             if (textData == BotButtonsStorage.SearchTeammateMenu.NextPlayer.CallBackData)
             {
-                var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
+                usersData = CheckFilter(transmittedData);
                 if ((int)pageNumber == usersData.Count() - 1)
                 {
                     return new BotMessage(
@@ -341,7 +567,7 @@ namespace EnrageTgBotILovePchel.Service
 
             if (textData == BotButtonsStorage.SearchTeammateMenu.PreviousPlayer.CallBackData)
             {
-                var pageNumber = transmittedData.DataStorage.Get("currentPageNumber");
+                usersData = CheckFilter(transmittedData);
                 if ((int)pageNumber == 0)
                 {
                     return new BotMessage(
@@ -362,11 +588,67 @@ namespace EnrageTgBotILovePchel.Service
             {
                 UsersDatum userData = _usersDatasRepository.GetLastUserDataByChatId(transmittedData.ChatId);
                 transmittedData.State = States.SearchTeammateMenu.WatchingOnUserQuestionnaire;
+                transmittedData.Filter = -1;
                 return new BotMessage(DialogsStringsStorage.UserQuestionnaire(userData),
                     InlineKeyboardMarkupStorage.ChooseFindingMenu, MessageState.Edit);
             }
 
             return new BotMessage("Неопознанная ошибка", MessageState.Create);
+        }
+
+        private List<UsersDatum> CheckFilter(TransmittedData transmittedData)
+        {
+            if (transmittedData.Filter == -1)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId);
+            }
+
+            if (transmittedData.Filter == 1)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 1, 0, 12000);
+            }
+
+            if (transmittedData.Filter == 2)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 2, 0, 12000);
+            }
+
+            if (transmittedData.Filter == 3)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 3, 0, 12000);
+            }
+
+            if (transmittedData.Filter == 4)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 4, 0, 12000);
+            }
+
+            if (transmittedData.Filter == 5)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 5, 0, 12000);
+            }
+
+            if (transmittedData.Filter == 0)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 0, 2000);
+            }
+
+            if (transmittedData.Filter == 2000)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 2000, 4000);
+            }
+
+            if (transmittedData.Filter == 4000)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 4000, 6000);
+            }
+
+            if (transmittedData.Filter == 6000)
+            {
+                return _usersDatasRepository.GetAllUserExcept(transmittedData.ChatId, 0, 6000);
+            }
+
+            return new List<UsersDatum>();
         }
 
         private bool CheckIsButton(string textData)

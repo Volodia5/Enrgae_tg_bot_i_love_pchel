@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Enrgat_tg_bot.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+03689113aede22992f4ee8f3e8a5eeaafe2abbef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd9e190a8b7c43475db9a360c8aea306da0a1323")]
 [assembly: System.Reflection.AssemblyProductAttribute("Enrgat_tg_bot.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Enrgat_tg_bot.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

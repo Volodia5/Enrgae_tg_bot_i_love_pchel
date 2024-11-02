@@ -19,10 +19,52 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
             _dbContext = db;
         }
 
-        public List<UsersDatum> GetAllUserExcept(long chatId)
+        public List<UsersDatum> GetAllUserExcept(long chatId, int? pos = 0, int? ratingFrom = -1, int? ratingTo = -1)
         {
             List<UsersDatum> usersDatasList = new List<UsersDatum>();
-            IQueryable<UsersDatum> usersDatasFromDb = _dbContext.UsersData.Where(x => x.ChatId != chatId);
+            IQueryable<UsersDatum> usersDatasFromDb;
+
+            if (pos == 0 && ratingFrom == -1 && ratingTo == -1)
+            {
+                usersDatasFromDb = _dbContext.UsersData.Where(x => x.ChatId != chatId);
+
+                foreach (var item in usersDatasFromDb)
+                {
+                    usersDatasList.Add(item);
+                }
+            }
+
+            if (pos != 0 && ratingFrom != -1 && ratingTo != -1)
+            {
+                usersDatasFromDb = _dbContext.UsersData.Where(x => x.ChatId != chatId && x.PlayerPosition == pos && x.PlayerRating >= ratingFrom && x.PlayerPosition <= ratingTo);
+
+                foreach (var item in usersDatasFromDb)
+                {
+                    usersDatasList.Add(item);
+                }
+            }
+            
+            // if (pos != 0)
+            // {
+            //    usersDatasFromDb =
+            //         _dbContext.UsersData.Where(x => x.ChatId != chatId && x.PlayerPosition == pos);
+            //
+            //     foreach (var item in usersDatasFromDb)
+            //     {
+            //         usersDatasList.Add(item);
+            //     }
+            // }
+            
+            if (ratingTo != -1)
+            {
+                usersDatasFromDb = _dbContext.UsersData.Where(x =>
+                    x.ChatId != chatId && x.PlayerRating >= ratingFrom && x.PlayerRating <= ratingTo);
+            }
+            else
+            {
+                usersDatasFromDb = _dbContext.UsersData.Where(x =>
+                    x.ChatId != chatId && x.PlayerRating >= ratingFrom);
+            }
 
             foreach (var item in usersDatasFromDb)
             {
@@ -31,7 +73,7 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
 
             return usersDatasList;
         }
-        
+
         public UsersDatum GetLastUserDataByChatId(long chatId)
         {
             var user = _dbContext.UsersData.Where(x => x.ChatId == chatId).OrderBy(x => x.Id).LastOrDefault();
@@ -58,7 +100,8 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
             }
         }
 
-        public void AddUser(string playerName, int playerRating, int playerPos, string playerTgNick, long chatId, string playerDescription)
+        public void AddUser(string playerName, int playerRating, int playerPos, string playerTgNick, long chatId,
+            string playerDescription)
         {
             _dbContext.UsersData.Add(new UsersDatum()
             {
@@ -85,7 +128,7 @@ namespace EnrageTgBotILovePchel.Db.Repositories.Implemintations
         {
             UsersDatum usersDatumFromBd = _dbContext.UsersData.Where(x => x.Id == inputUsersData.Id).FirstOrDefault();
             usersDatumFromBd.PlayerPosition = inputUsersData.PlayerPosition;
-            
+
             _dbContext.UsersData.Update(usersDatumFromBd);
             _dbContext.SaveChanges();
         }

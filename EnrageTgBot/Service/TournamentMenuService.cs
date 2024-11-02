@@ -19,8 +19,8 @@ namespace EnrageTgBotILovePchel.Service
 
         public BotMessage ProcessInputTournamentRules(string textData, TransmittedData transmittedData)
         {
-            TournamentsDatum tournamentData = _tournamentDatasRepository.GetTournamentsData();
-            _tournamentDatasRepository.UpdateTournamentRules(tournamentData.TournId, textData);
+            //TournamentsDatum tournamentData = _tournamentDatasRepository.GetTournamentsData();
+            // _tournamentDatasRepository.UpdateTournamentRules(tournamentData.TournId, textData);
             transmittedData.State = States.MainMenu.ClickOnInlineButton;
             
             return new BotMessage("Данные о предстоящем турнире успешно изменены !!!" + DialogsStringsStorage.MainMenu, InlineKeyboardMarkupStorage.AdminMainMenu, MessageState.Create);

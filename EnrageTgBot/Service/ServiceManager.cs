@@ -77,6 +77,9 @@ public class ServiceManager
         _methods[States.SearchTeammateMenu.QuestionnaireInputDeleteConfirmation] =
             searchTeammateMenuService.ProcessClickOnButtonDeleteQuestionnaireConfirmation;
         _methods[States.SearchTeammateMenu.FindingTeammate] = searchTeammateMenuService.SearchTeammateControlMenuAction;
+        _methods[States.SearchTeammateMenu.SelectSearchFilter] = searchTeammateMenuService.SelectSearchFilter;
+        _methods[States.SearchTeammateMenu.ProcessClickOnInlineButtonFilter] =
+            searchTeammateMenuService.ProcessClickOnInlineButtonFilter;
 
         #endregion
     }
@@ -99,14 +102,11 @@ public class ServiceManager
             }
             transmittedData.State = States.MainMenu.ClickOnInlineButton;
             transmittedData.DataStorage.Clear();
+            
             if(transmittedData.ChatId == 994645175 || transmittedData.ChatId == 564752339)
-            {
                 return new BotMessage(DialogsStringsStorage.MainMenu, InlineKeyboardMarkupStorage.AdminMainMenu, MessageState.Create);
-            }
             else
-            {
                 return new BotMessage(DialogsStringsStorage.MainMenu, InlineKeyboardMarkupStorage.MainMenu, MessageState.Create);
-            }
         }
 
         Func<string, TransmittedData, BotMessage> serviceMethod = _methods[transmittedData.State];

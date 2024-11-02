@@ -21,9 +21,9 @@ namespace EnrageTgBotILovePchel.Service
 
         public BotMessage ProcessClickOnInlineButton(string textData, TransmittedData transmittedData)
         {
-            TournamentsDatum tournamentsData = _tournamentDatasRepository.GetTournamentsData();
+            //TournamentsDatum tournamentsData = _tournamentDatasRepository.GetTournamentsData();
             UsersDatum userData = _usersDatas.GetLastUserDataByChatId(transmittedData.ChatId);
-
+            
             if (textData == ConstraintStringsStorage.ChangeTournamentData)
             {
                 transmittedData.State = States.TournamentMenu.ProcessInputTournamentRules;
@@ -31,8 +31,16 @@ namespace EnrageTgBotILovePchel.Service
                 return new BotMessage(DialogsStringsStorage.ChangeTournamentData, InlineKeyboardMarkup.Empty(), MessageState.Create);
             }
 
+            if (textData == ConstraintStringsStorage.WhoWeAre)
+            {
+                transmittedData.State = States.MainMenu.ClickOnInlineButton;
+                return new BotMessage(DialogsStringsStorage.WhoWeAre, InlineKeyboardMarkupStorage.MenuWithBackButton, MessageState.Edit);
+            }
+
             if (textData == ConstraintStringsStorage.FindTeammate)
             {
+                transmittedData.TgUsername = textData;
+                    
                 if (userData != null)
                 {
                     transmittedData.State = States.SearchTeammateMenu.WatchingOnUserQuestionnaire;
@@ -41,7 +49,7 @@ namespace EnrageTgBotILovePchel.Service
                 else
                 {
                     transmittedData.State = States.SearchTeammateMenu.InputName;
-                    return new BotMessage(DialogsStringsStorage.NewQuestionnaireNameInput, InlineKeyboardMarkup.Empty(), true, MessageState.Create);
+                    return new BotMessage(DialogsStringsStorage.NewQuestionnaireNameInput, InlineKeyboardMarkup.Empty(), true, MessageState.Create, transmittedData);
                 }
             }
 

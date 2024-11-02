@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EnrageTgBotILovePchel.Bot;
 using EnrageTgBotILovePchel.Bot.Router;
+using EnrageTgBotILovePchel.Db.DbConnector;
 using EnrageTgBotILovePchel.Util.Button;
 using EnrageTgBotILovePchel.Util.String;
 using NLog;
@@ -21,10 +22,10 @@ namespace EnrageTgBotILovePchel.Bot;
 public class BotRequestHandlers
 {
     private static ILogger Logger = LogManager.GetCurrentClassLogger();
-
+    private EnrageBotVovodyaDbContext _dbContext;
     private ChatsRouter _chatsRouter;
 
-    private Dictionary<long, int> lastBotMessageForUser = new Dictionary<long, int>();
+    private Dictionary<long, int> _lastBotMessageForUser = new Dictionary<long, int>();
 
     public BotRequestHandlers()
     {
@@ -51,6 +52,8 @@ public class BotRequestHandlers
                         chatId = update.Message.Chat.Id;
                         messageFromUserId = update.Message.MessageId;
                         textData = update.Message.Text;
+                        
+                        //_userTgNickname[chatId] = update.Message.From.Username;
 
                         Console.WriteLine(
                             $"ВХОДЯЩЕЕ СОООБЩЕНИЕ UpdateType = {update.Type}; chatId = {chatId}; messageId = {messageFromUserId}; text = {textData} canRoute = {canRoute}");
@@ -66,10 +69,9 @@ public class BotRequestHandlers
                         canRoute = true;
                         chatId = update.CallbackQuery.Message.Chat.Id;
                         messageFromUserId = update.CallbackQuery.Message.MessageId;
-                        textData = update.CallbackQuery.Data;
 
-                        Console.WriteLine(
-                            $"ВХОДЯЩЕЕ СОООБЩЕНИЕ UpdateType = {update.Type}; chatId = {chatId}; messageId = {messageFromUserId}; text = {textData} canRoute = {canRoute}");
+                            Console.WriteLine(
+                                $"ВХОДЯЩЕЕ СОООБЩЕНИЕ UpdateType = {update.Type}; chatId = {chatId}; messageId = {messageFromUserId}; text = {textData} canRoute = {canRoute}");
                         Logger.Info(
                             $"ВХОДЯЩЕЕ СОООБЩЕНИЕ UpdateType = {update.Type}; chatId = {chatId}; messageId = {messageFromUserId}; text = {textData} canRoute = {canRoute}");
                     }
@@ -99,15 +101,15 @@ public class BotRequestHandlers
                         replyMarkup: keyboard,
                         cancellationToken: cancellationToken);
 
-                    lastBotMessageForUser[chatId] = message.MessageId;
+                    if (botMessage.Text != "Неопознанная ошибка")
+                        _lastBotMessageForUser[chatId] = message.MessageId;
                 }
                 else
                 {
-                    int messageId = lastBotMessageForUser[chatId];
+                    int messageId = _lastBotMessageForUser[chatId];
 
                     if (botMessage.Text != DialogsStringsStorage.TournamentsRules)
                     {
-                        
                         try
                         {
                             message = await botClient.EditMessageTextAsync(
@@ -117,7 +119,7 @@ public class BotRequestHandlers
                                 replyMarkup: (InlineKeyboardMarkup)keyboard,
                                 cancellationToken: cancellationToken);
 
-                            lastBotMessageForUser[chatId] = message.MessageId;
+                            _lastBotMessageForUser[chatId] = message.MessageId;
 
                             Console.WriteLine(
                                 $"ИСХОДЯЩЕЕ СОООБЩЕНИЕ chatId = {chatId}; text = {botMessage.Text.Replace("\n", " ")}; Keyboard = {getKeyboardAsString(botMessage.KeyboardMarkup)}");
@@ -150,10 +152,12 @@ public class BotRequestHandlers
                             $"ИСХОДЯЩЕЕ СОООБЩЕНИЕ chatId = {chatId}; text = {botMessage.Text.Replace("\n", " ")}; Keyboard = {getKeyboardAsString(botMessage.KeyboardMarkup)}");
                     }
                 }
-            } 
+            }
         }
         catch (Exception e)
         {
+            // try
+            // {
             await botClient.DeleteMessageAsync(
                 chatId: chatId,
                 messageId: messageFromUserId,
@@ -162,6 +166,12 @@ public class BotRequestHandlers
 
             Console.WriteLine($"ОШИБКА chatId = {chatId}; text = {e.Message}");
             Logger.Error($"ОШИБКА chatId = {chatId}; text = {e.Message}");
+            // }
+            // catch (Exception exception)
+            // {
+            //     Console.WriteLine("Сообщение для удаления не найдено");
+            //     Logger.Error("Сообщение для удаления не найдено");
+            // }
         }
     }
 
@@ -174,7 +184,7 @@ public class BotRequestHandlers
                 => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
-        
+
         Console.WriteLine($"Ошибка поймана в методе HandlePollingErrorAsync, {errorMessage}");
         Logger.Error($"Ошибка поймана в методе HandlePollingErrorAsync, {errorMessage}");
         return Task.CompletedTask;
@@ -209,5 +219,22 @@ public class BotRequestHandlers
         }
 
         return stringBuilder.ToString();
+    }
+    
+    private bool CheckIsButton(string textData)
+    {
+        if (textData == BotButtonsStorage.MainMenu.FindCommand.CallBackData ||
+            textData == BotButtonsStorage.MainMenu.Rules.CallBackData ||
+            // textData == BotButtonsStorage.MainMenu.WhenIsNextTournament.CallBackData ||
+            textData == BotButtonsStorage.SearchTeammateMenu.NextPlayer.CallBackData ||
+            textData == BotButtonsStorage.SearchTeammateMenu.PreviousPlayer.CallBackData ||
+            textData == BotButtonsStorage.SearchTeammateMenu.DeleteQuestionnaire.CallBackData ||
+            textData == BotButtonsStorage.SearchTeammateMenu.EditQuestionnaire.CallBackData ||
+            textData == BotButtonsStorage.SearchTeammateMenu.FindTeammate.CallBackData)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

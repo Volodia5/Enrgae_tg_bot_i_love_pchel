@@ -6,7 +6,7 @@ public class States
     public static MainMenu MainMenu { get; } = new();
     public static SearchTeammateMenu SearchTeammateMenu { get; } = new();
 
-    public static TournamentMenu TournamentMenu { get; } = new ();
+    public static TournamentMenu TournamentMenu { get; } = new();
 }
 
 public class StartMenu
@@ -27,6 +27,8 @@ public class TournamentMenu
 
 public class SearchTeammateMenu
 {
+    public string ProcessClickOnInlineButtonFilter { get; } = "ProcessClickOnInlineButtonFilter";
+    public string SelectSearchFilter { get; } = "SelectSearchFilter";
     public string QuestionnaireInputCreateConfirmation { get; } = "QuestionnaireInputCreateConfirmation";
     public string InputNickname { get; } = "InputNickname";
     public string ClickInlineButtonInActionWithGameMenu { get; } = "ClickInlineButtonInActionWithSearchMenu";
